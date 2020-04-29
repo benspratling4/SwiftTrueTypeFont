@@ -22,6 +22,9 @@
 
 /* Begin PBXBuildFile section */
 		B5D10728245926C500FC9151 /* Tests+sampleFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D10727245926C500FC9151 /* Tests+sampleFont.swift */; };
+		B5D1072B24592CE800FC9151 /* HeaderTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D1072924592C8C00FC9151 /* HeaderTable.swift */; };
+		B5D1072D2459395600FC9151 /* FixedFloats.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D1072C2459395600FC9151 /* FixedFloats.swift */; };
+		B5D1072F24593D1D00FC9151 /* HorizontalHeaderTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D1072E24593D1D00FC9151 /* HorizontalHeaderTable.swift */; };
 		OBJ_28 /* Data+MSB.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Data+MSB.swift */; };
 		OBJ_29 /* NameTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* NameTable.swift */; };
 		OBJ_30 /* OffsetTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* OffsetTable.swift */; };
@@ -53,6 +56,9 @@
 /* Begin PBXFileReference section */
 		B5D107262459261A00FC9151 /* OpenSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Regular.ttf"; sourceTree = "<group>"; };
 		B5D10727245926C500FC9151 /* Tests+sampleFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Tests+sampleFont.swift"; sourceTree = "<group>"; };
+		B5D1072924592C8C00FC9151 /* HeaderTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderTable.swift; sourceTree = "<group>"; };
+		B5D1072C2459395600FC9151 /* FixedFloats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedFloats.swift; sourceTree = "<group>"; };
+		B5D1072E24593D1D00FC9151 /* HorizontalHeaderTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalHeaderTable.swift; sourceTree = "<group>"; };
 		OBJ_10 /* NameTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameTable.swift; sourceTree = "<group>"; };
 		OBJ_11 /* OffsetTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffsetTable.swift; sourceTree = "<group>"; };
 		OBJ_12 /* TTFFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTFFile.swift; sourceTree = "<group>"; };
@@ -144,6 +150,9 @@
 				OBJ_11 /* OffsetTable.swift */,
 				OBJ_13 /* TableRecord.swift */,
 				OBJ_10 /* NameTable.swift */,
+				B5D1072924592C8C00FC9151 /* HeaderTable.swift */,
+				B5D1072E24593D1D00FC9151 /* HorizontalHeaderTable.swift */,
+				B5D1072C2459395600FC9151 /* FixedFloats.swift */,
 			);
 			name = SwiftTrueTypeFont;
 			path = Sources/SwiftTrueTypeFont;
@@ -235,7 +244,9 @@
 			files = (
 				OBJ_28 /* Data+MSB.swift in Sources */,
 				OBJ_29 /* NameTable.swift in Sources */,
+				B5D1072F24593D1D00FC9151 /* HorizontalHeaderTable.swift in Sources */,
 				OBJ_30 /* OffsetTable.swift in Sources */,
+				B5D1072B24592CE800FC9151 /* HeaderTable.swift in Sources */,
 				OBJ_31 /* TTFFile.swift in Sources */,
 				OBJ_32 /* TableRecord.swift in Sources */,
 			);
@@ -254,6 +265,7 @@
 			buildActionMask = 0;
 			files = (
 				OBJ_50 /* NameTableTests.swift in Sources */,
+				B5D1072D2459395600FC9151 /* FixedFloats.swift in Sources */,
 				B5D10728245926C500FC9151 /* Tests+sampleFont.swift in Sources */,
 				OBJ_51 /* XCTestManifests.swift in Sources */,
 			);

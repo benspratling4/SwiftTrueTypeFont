@@ -16,7 +16,7 @@ struct TableRecord {
 	
 	
 	var tagName:String {
-		return String(data:Data(LSBFixedWidthUInt: tag), encoding: .ascii) ?? ""
+		return String(data:Data(MSBFixedWidthUInt: tag), encoding: .ascii) ?? ""
 	}
 	
 	init(data:Data, at offset:Int)throws {

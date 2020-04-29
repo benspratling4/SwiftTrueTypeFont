@@ -59,4 +59,14 @@ public class TTF {
 		guard let (data, nameTableStart) = try? tableData(with:"name") else { return nil }
 		return try? NameTable(data: data, at: nameTableStart)
 	}
+	
+	public var headerTable:HeaderTable? {
+		guard let (data, nameTableStart) = try? tableData(with:"head") else { return nil }
+		return try? HeaderTable(data: data, at: nameTableStart)
+	}
+	
+	public var horizontalHeaderTable:HorizontalHeaderTable? {
+		guard let (data, nameTableStart) = try? tableData(with:"hhea") else { return nil }
+		return try? HorizontalHeaderTable(data: data, at: nameTableStart)
+	}
 }

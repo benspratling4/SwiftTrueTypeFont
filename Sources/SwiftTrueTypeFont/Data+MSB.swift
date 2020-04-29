@@ -16,38 +16,40 @@ extension Data {
 		guard count >= offset + byteCount else {
 			throw MsbUin32Error.insufficientCount(offset)
 		}
-		var byte:UInt8 = 0
-		var value:Result = 0
-		for i in 0..<byteCount {
-			byte = self[offset + i]
-			value = value << 8
-			value += Result(byte)
+		let placeHolder:Result = withUnsafeBytes { pointer in
+			return pointer.load(fromByteOffset: offset, as: Result.self)
 		}
-		return value
+		return Result(bigEndian: placeHolder)
+	}
+	
+	
+	func readMSBFixedWidthInt<Result>(at offset:Int)throws->Result where Result:FixedWidthInteger, Result:SignedInteger {
+		let byteCount:Int = Result.bitWidth / 8
+		guard count >= offset + byteCount else {
+			throw MsbUin32Error.insufficientCount(offset)
+		}
+		let placeHolder:Result = withUnsafeBytes { pointer in
+			return pointer.load(fromByteOffset: offset, as: Result.self)
+		}
+		return Result(bigEndian: placeHolder)
 	}
 	
 	init<Result>(MSBFixedWidthUInt:Result) where Result:FixedWidthInteger, Result:UnsignedInteger {
-		var bytes:[UInt8] = []
-		var lotsOfBytes:Result = MSBFixedWidthUInt
-		for _ in 0..<4 {
-			let aByte:Result = lotsOfBytes & Result(0xFF)
-			let byte:UInt8 = UInt8(clamping: aByte)
-			bytes.append(byte)
-			lotsOfBytes = lotsOfBytes >> 8
+		let byteCount:Int = Result.bitWidth / 8
+		let bigValue:Result = MSBFixedWidthUInt.bigEndian
+		self.init(count: byteCount)
+		withUnsafeMutableBytes { pointer in
+			pointer.bindMemory(to:Result.self).baseAddress?.pointee = bigValue
 		}
-		self = Data(bytes)
 	}
 	
 	init<Result>(LSBFixedWidthUInt:Result) where Result:FixedWidthInteger, Result:UnsignedInteger {
-		var bytes:[UInt8] = []
-		var lotsOfBytes:Result = LSBFixedWidthUInt
-		for _ in 0..<4 {
-			let aByte:Result = lotsOfBytes & Result(0xFF)
-			let byte:UInt8 = UInt8(clamping: aByte)
-			bytes.insert(byte, at: 0)
-			lotsOfBytes = lotsOfBytes >> 8
+		let byteCount:Int = Result.bitWidth / 8
+		let littleValue:Result = LSBFixedWidthUInt.littleEndian
+		self.init(count: byteCount)
+		withUnsafeMutableBytes { pointer in
+			pointer.bindMemory(to:Result.self).baseAddress?.pointee = littleValue
 		}
-		self = Data(bytes)
 	}
 	
 	
