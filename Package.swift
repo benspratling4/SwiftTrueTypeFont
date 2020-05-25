@@ -12,7 +12,8 @@ let package = Package(
             targets: ["SwiftTrueTypeFont"]),
     ],
     dependencies: [
-		.package(path: "../SwiftGraphicsCore"),	//for development
+//		.package(path: "../SwiftGraphicsCore"),	//for development
+		.package(url: "https://github.com/benspratling4/SwiftGraphicsCore.git", .branch("subpath_changes")),
 		.package(url: "https://github.com/benspratling4/SwiftPNG.git", from: "2.0.0"),	//for testing
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),

@@ -29,7 +29,8 @@ public struct HorizontalHeaderTable {
 //	var metricDataFormat
 	public var numberOfHMetrics:UInt16
 	
-	init(data:Data, at offset:Int)throws {
+	init(data:Data, in range:Range<Int>)throws {
+		let offset:Int = range.lowerBound
 		majorVersion = try data.readMSBFixedWidthUInt(at: offset + 0)
 		minorVersion = try data.readMSBFixedWidthUInt(at: offset + 2)
 		ascender = try data.readMSBFixedWidthInt(at: offset + 4)

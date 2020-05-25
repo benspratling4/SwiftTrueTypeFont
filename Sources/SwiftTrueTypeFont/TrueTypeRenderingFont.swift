@@ -44,14 +44,62 @@ public class TrueTypeRenderingFont : RenderingFont {
 	
 	//basically, how wide is this character
 	public func glyphAdvances(indices:[Int])->[SGFloat] {
-		let glyphOffsets:[Int] = indices.map({ trueTypeFont.locationTable.glyphOffsets[$0] })
-		
-		let boxes:[GlyphBox] = glyphOffsets.compactMap({ try? trueTypeFont.glyphTable.boundingBox(from: $0) })
-		return boxes.map({  ppem * SGFloat($0.xMax - $0.xMin) / SGFloat(trueTypeFont.headerTable.unitsPerEm) })
+		let glyphRanges:[Range<Int>] = indices.compactMap({ try? trueTypeFont.locationTable.rangeOfGlyph(at:$0) })
+		let advances:[UInt16] = indices.map({ trueTypeFont.horizontalMetricsTable.advancedWidthsAndLeftSideBearings[$0].advanceWidth })
+//		let boxes:[GlyphBox] = glyphRanges.compactMap({ try? trueTypeFont.glyphTable.boundingBox(in:$0) })
+		return advances.map({  ppem * SGFloat($0) / SGFloat(trueTypeFont.headerTable.unitsPerEm) })
 	}
 	
 	public func path(glyphIndex:Int)->Path {
-		fatalError("write me")
+		guard let range:Range<Int> = try? trueTypeFont.locationTable.rangeOfGlyph(at:glyphIndex)
+			,let glyph:Glyph = try? trueTypeFont.glyphTable.glyph(in: range) else {
+				return Path()
+		}
+		switch glyph.format {
+		case .compound(_):
+			fatalError("write me")
+			
+		case .simple(let simpleGlyph):
+			let scale:SGFloat = ppem / SGFloat(trueTypeFont.headerTable.unitsPerEm)
+			let xOffset = glyph.boundingBox.xMin
+			
+			//make paths out of the Glyph, then scale it
+			var path = Path()
+			var controlPoint:Point? = nil
+			for contour in simpleGlyph.contours {
+				var isFirstPoint:Bool = true
+				for point in contour.points {
+					let thisPoint:Point = Point(x: SGFloat(point.x), y: SGFloat(point.y))
+					if isFirstPoint {
+						if !point.isOnCurve {
+							print("wait what?")
+						}
+						path.move(to: thisPoint)
+						isFirstPoint = false
+						continue
+					}
+					if point.isOnCurve {
+						if let ctrlPoint = controlPoint {
+							path.addCurve(near: ctrlPoint, to: thisPoint)
+						} else {
+							path.addLine(to: thisPoint)
+						}
+						controlPoint = nil
+					} else {
+						if let ctrlPoint = controlPoint {
+							//there was an implicit on-curve point half way in between them
+							let implicitOnCurvePoint = (thisPoint + ctrlPoint)/2.0
+							path.addCurve(near: ctrlPoint, to: implicitOnCurvePoint)
+						}
+						controlPoint = thisPoint
+					}
+				}
+			}
+			//let moveTransform = Transform2D(translateX: -SGFloat(xOffset), y: 0.0)
+			let scaleTransform = Transform2D(scaleX: scale, scaleY:-scale)
+//			return moveTransform.concatenate(with: scaleTransform).transform(path)
+			return scaleTransform.transform(path)
+		}
 	}
 	
 	

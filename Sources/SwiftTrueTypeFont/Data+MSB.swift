@@ -28,9 +28,18 @@ extension Data {
 		guard count >= offset + byteCount else {
 			throw MsbUin32Error.insufficientCount(offset)
 		}
-		let placeHolder:Result = withUnsafeBytes { pointer in
-			return pointer.load(fromByteOffset: offset, as: Result.self)
+		let placeHolder:Result
+		if offset % byteCount == 0 {
+			placeHolder = withUnsafeBytes { pointer in
+				return pointer.load(fromByteOffset: offset, as: Result.self)
+			}
+		} else {
+			let subData = Data(self[offset..<offset+byteCount])
+			placeHolder = subData.withUnsafeBytes { pointer in
+				return pointer.load(fromByteOffset: 0, as: Result.self)
+			}
 		}
+		
 		return Result(bigEndian: placeHolder)
 	}
 	

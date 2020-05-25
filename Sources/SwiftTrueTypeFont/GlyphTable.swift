@@ -20,7 +20,8 @@ struct GlyphTable {
 	var subData:Data
 	
 	///in f units
-	func boundingBox(from start:Int)throws->GlyphBox {
+	func boundingBox(in range:Range<Int>)throws->GlyphBox {
+		let start:Int = range.lowerBound
 		let xMin:Int16 = try subData.readMSBFixedWidthInt(at: start + 2)
 		let yMin:Int16 = try subData.readMSBFixedWidthInt(at: start + 4)
 		let xMax:Int16 = try subData.readMSBFixedWidthInt(at: start + 6)
@@ -29,7 +30,9 @@ struct GlyphTable {
 	}
 	
 	
-	func glyph(from start:Int, to end:Int)throws->Glyph {
+	func glyph(in range:Range<Int>)throws->Glyph {
+		let start:Int = range.lowerBound
+		let end:Int = range.upperBound
 		let numberOfCounters:Int16 = try subData.readMSBFixedWidthInt(at: start)
 		let isCompound:Bool = numberOfCounters < 0
 		let contourCount:Int = Int(numberOfCounters) * (isCompound ? -1 : 1)
@@ -54,74 +57,72 @@ struct GlyphTable {
 		dataIndex += 2
 		dataIndex += Int(instructionLength)
 		
-		///number of more times to
-		var previousFlagsRepeatCount:Int = 0
-		var previousFlags:GlyphFlags?
-		var contours:[GlyphContour] = []
-		var points:[GlyphPoint] = []
-			var pointIndex:Int = 0
-		while dataIndex < subData.count, indicesOfContourEndpoints.count > 0 {
-			let flags:GlyphFlags
-			let newX:Int16
-			let newY:Int16
-			if previousFlagsRepeatCount > 0
-				,let oldFlags = previousFlags {
-				flags = oldFlags
-			} else {
-				flags = GlyphFlags(rawValue: subData[dataIndex])
+		//parse flag bytes
+		var pointFlags:[GlyphFlags] = []
+		var flagIndex:Int = 0
+		while flagIndex <= indicesOfContourEndpoints.last! {
+			let flags:GlyphFlags = GlyphFlags(rawValue: subData[dataIndex])
+			dataIndex += 1
+			pointFlags.append(flags)
+			flagIndex += 1
+			if flags.contains(.repeats) {
+				let repeatCount:UInt8 = subData[dataIndex]
 				dataIndex += 1
+				pointFlags.append(contentsOf:[GlyphFlags](repeating: flags, count: Int(repeatCount)) )
+				flagIndex += Int(repeatCount)
 			}
+		}
+		var xCoords:[Int16] = []
+		for flags in pointFlags {
+			let newX:Int16
 			if flags.contains(.xIsShort) {
 				let xByte:UInt8 = subData[dataIndex]
 				dataIndex += 1
 				let shortX:UInt16 = UInt16(xByte)
 				let signedX:Int16 = Int16(bitPattern: shortX)
-				let isNegative:Bool = flags.contains(.shortXSign)
+				let isNegative:Bool = !flags.contains(.shortXSign)
 				newX = isNegative ? -1 * signedX : signedX
 			} else if flags.contains(.xIsTheSame) {
 				//repeat old value
-				newX = points.last!.x
+				newX = 0
 			} else {
 				//read int16 from data
 				newX = try subData.readMSBFixedWidthInt(at: dataIndex)
 				dataIndex += 2
 			}
-			
+			xCoords.append(newX + (xCoords.last ?? 0))
+		}
+		
+		var yCoords:[Int16] = []
+		for flags in pointFlags {
+			let newY:Int16
 			if flags.contains(.yIsShort) {
 				let yByte:UInt8 = subData[dataIndex]
 				dataIndex += 1
 				let shortY:UInt16 = UInt16(yByte)
 				let signedY:Int16 = Int16(bitPattern: shortY)
-				let isNegative:Bool = flags.contains(.shortYSign)
+				let isNegative:Bool = !flags.contains(.shortYSign)
 				newY = isNegative ? -1 * signedY : signedY
 			} else if flags.contains(.yIsTheSame) {
 				//repeat old value
-				newY = points.last!.x
+				newY = 0
 			} else {
 				//read int16 from data
 				newY = try subData.readMSBFixedWidthInt(at: dataIndex)
 				dataIndex += 2
 			}
-			points.append(GlyphPoint(x: newX, y: newY, isOnCurve: flags.contains(.pointIsOnCurve)))
-			defer {
-				pointIndex += 1
-			}
+			yCoords.append(newY + (yCoords.last ?? 0))
+		}
+		
+		//now transform flags x and y into contours and points
+		var contours:[GlyphContour] = []
+		var points:[GlyphPoint] = []
+		for (pointIndex, flags) in pointFlags.enumerated() {
+			points.append(GlyphPoint(x: xCoords[pointIndex], y: yCoords[pointIndex], isOnCurve: flags.contains(.pointIsOnCurve)))
 			if pointIndex == indicesOfContourEndpoints[0] {
 				_ = indicesOfContourEndpoints.removeFirst()
 				contours.append(GlyphContour(points: points))
 				points = []
-				continue
-			}
-			
-			if previousFlagsRepeatCount > 0 {
-				previousFlagsRepeatCount -= 1
-				continue
-			}
-			if flags.contains(.repeats) {
-				let repeatByte:UInt8 = subData[dataIndex]
-				dataIndex += 1
-				previousFlagsRepeatCount = Int(repeatByte)
-				previousFlags = flags
 			}
 		}
 		

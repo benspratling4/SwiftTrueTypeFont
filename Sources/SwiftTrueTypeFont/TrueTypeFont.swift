@@ -25,7 +25,11 @@ public class TrueTypeFont : Font {
 		//now extract required tables
 		nameTable = try NameTable(data:data, in:try sfnt.tableRange(tag:"name"))
 		headerTable = try HeaderTable(data: data, in: try sfnt.tableRange(tag:"head"))
+		horizontalHeaderTable = try HorizontalHeaderTable(data: data, in: try sfnt.tableRange(tag: "hhea"))
 		maxTable = try MaxTable(data: data, in: try sfnt.tableRange(tag:"maxp"))
+		horizontalMetricsTable = try HorizontalMetricsTable(data: data, in: try sfnt.tableRange(tag:"hmtx")
+			,numberOfHMetrics:Int(horizontalHeaderTable.numberOfHMetrics)
+			,numGlyphs: maxTable.numberOfGlyphs)
 		characterMapTable = try CharacterMapTable(data: data, in: try sfnt.tableRange(tag: "cmap"))
 		locationTable = try LocationTable(data:data
 			,in:try sfnt.tableRange(tag:"loca")
@@ -61,7 +65,9 @@ public class TrueTypeFont : Font {
 	let sfnt:SFNT
 	let nameTable:NameTable
 	let headerTable:HeaderTable
+	let horizontalHeaderTable:HorizontalHeaderTable
 	let maxTable:MaxTable
+	let horizontalMetricsTable:HorizontalMetricsTable
 	let characterMapTable:CharacterMapTable
 	let locationTable:LocationTable
 	let glyphTable:GlyphTable
