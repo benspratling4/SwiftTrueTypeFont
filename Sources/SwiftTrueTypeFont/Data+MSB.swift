@@ -34,6 +34,17 @@ extension Data {
 		return Result(bigEndian: placeHolder)
 	}
 	
+	func readMSBFixedWidthArray<Result>(at offset:Int, count:Int)throws->[Result] where Result:FixedWidthInteger/*, Result:SignedInteger*/ {
+		let range:Range<Int> = offset..<offset+count*MemoryLayout<Result>.size
+		var values:[Result] = [Result](repeating: 0, count:count)
+		_ = values.withUnsafeMutableBytes {
+			copyBytes(to: $0, from: range)
+		}
+		return values.map({ Result(bigEndian: $0) })
+	}
+	
+	
+	
 	init<Result>(MSBFixedWidthUInt:Result) where Result:FixedWidthInteger, Result:UnsignedInteger {
 		let byteCount:Int = Result.bitWidth / 8
 		let bigValue:Result = MSBFixedWidthUInt.bigEndian

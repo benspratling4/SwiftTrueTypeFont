@@ -12,12 +12,11 @@ public enum HeaderTableError : Error {
 }
 
 public struct HeaderTable {
-	public var majorVersion:UInt16
-	public var minorVersion:UInt16
+	public var version:UInt32
 //	var fontRevision: 32 bits
 //	var checkSumAdjustment: 32 bits
 //	let magicNumber: 32 bits
-	public var flags:HeaderFlags
+	public var flags:HeaderFlags	//16 bits
 	public var unitsPerEm:UInt16
 //	var created 64 bits
 //	var modified 64 bits
@@ -31,18 +30,18 @@ public struct HeaderTable {
 	public var indexToLocFormat:Int16
 	public var glyphDataFormat:Int16
 	
-	init(data:Data, at offset:Int)throws {
-		majorVersion = try data.readMSBFixedWidthUInt(at: offset + 0)
-		minorVersion = try data.readMSBFixedWidthUInt(at: offset + 2)
+	init(data:Data, in range:Range<Int>)throws {
+		let offset:Int = range.lowerBound
+		version = try data.readMSBFixedWidthUInt(at: offset + 0)
 		flags = HeaderFlags(rawValue: try data.readMSBFixedWidthUInt(at: offset + 16))
 		unitsPerEm = try data.readMSBFixedWidthUInt(at: offset + 18)
-		xMin = try data.readMSBFixedWidthInt(at: offset + 34)
-		yMin = try data.readMSBFixedWidthInt(at: offset + 36)
-		xMax = try data.readMSBFixedWidthInt(at: offset + 38)
-		yMax = try data.readMSBFixedWidthInt(at: offset + 40)
-		lowestRecPPEM = try data.readMSBFixedWidthUInt(at: offset + 44)
-		indexToLocFormat = try data.readMSBFixedWidthInt(at: offset + 46)
-		glyphDataFormat = try data.readMSBFixedWidthInt(at: offset + 48)
+		xMin = try data.readMSBFixedWidthInt(at: offset + 36)
+		yMin = try data.readMSBFixedWidthInt(at: offset + 38)
+		xMax = try data.readMSBFixedWidthInt(at: offset + 40)
+		yMax = try data.readMSBFixedWidthInt(at: offset + 42)
+		lowestRecPPEM = try data.readMSBFixedWidthUInt(at: offset + 46)
+		indexToLocFormat = try data.readMSBFixedWidthInt(at: offset + 48)
+		glyphDataFormat = try data.readMSBFixedWidthInt(at: offset + 50)
 	}
 	
 	

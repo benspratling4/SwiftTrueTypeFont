@@ -3,7 +3,7 @@ import XCTest
 
 final class NameTableTests: XCTestCase {
     func testEnglishPostScriptName() {
-		XCTAssertEqual(TestSamples.openSans().nameTable?.englishPostScriptName, "OpenSans")
+		XCTAssertEqual(TestSamples.openSans().name, "OpenSans")
     }
 
     static var allTests = [

@@ -10,7 +10,7 @@ import XCTest
 @testable import SwiftTrueTypeFont
 
 class TestSamples {
-	static func openSans()->TTF {
+	static func openSans()->TrueTypeFont {
 		let file = URL(fileURLWithPath: #file)
 		let fontUrl = file.deletingLastPathComponent().appendingPathComponent("OpenSans-Regular.ttf")
 		
@@ -18,10 +18,31 @@ class TestSamples {
 			XCTFail("did not read font file data")
 			fatalError()
 		}
-		guard let font = try? TTF(data: fontData) else {
-			XCTFail("TTF(data: did not open test file")
+		do {
+			let font = try TrueTypeFont(data: fontData)
+			return font
+		} catch {
+			print(error)
+			XCTFail("TrueTypeFont(data: did not open test file")
 			fatalError()
 		}
-		return font
+	}
+	
+	static func ubuntuRegular()->TrueTypeFont {
+		let file = URL(fileURLWithPath: #file)
+		let fontUrl = file.deletingLastPathComponent().appendingPathComponent("Ubuntu-Regular.ttf")
+		
+		guard let fontData = try? Data(contentsOf: fontUrl) else {
+			XCTFail("did not read font file data")
+			fatalError()
+		}
+		do {
+			let font = try TrueTypeFont(data: fontData)
+			return font
+		} catch {
+			print(error)
+			XCTFail("TrueTypeFont(data: did not open test file")
+			fatalError()
+		}
 	}
 }

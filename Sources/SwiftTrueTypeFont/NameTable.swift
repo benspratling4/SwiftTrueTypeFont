@@ -17,7 +17,8 @@ public enum NameTable {
 	case format1(NameTableFormat1)
 	
 	
-	init(data:Data, at offset:Int)throws {
+	init(data:Data, in range:Range<Int>)throws {
+		let offset:Int = range.lowerBound
 		let format:UInt16 = try data.readMSBFixedWidthUInt(at: offset)
 		switch format {
 		case 0:

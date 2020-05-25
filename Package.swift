@@ -12,6 +12,8 @@ let package = Package(
             targets: ["SwiftTrueTypeFont"]),
     ],
     dependencies: [
+		.package(path: "../SwiftGraphicsCore"),	//for development
+		.package(url: "https://github.com/benspratling4/SwiftPNG.git", from: "2.0.0"),	//for testing
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
     ],
@@ -20,9 +22,11 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "SwiftTrueTypeFont",
-            dependencies: []),
+            dependencies: [
+		.byName(name: "SwiftGraphicsCore"),
+		]),
         .testTarget(
             name: "SwiftTrueTypeFontTests",
-            dependencies: ["SwiftTrueTypeFont"]),
+            dependencies: ["SwiftTrueTypeFont", "SwiftPNG"]),
     ]
 )
