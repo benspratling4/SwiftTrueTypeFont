@@ -65,7 +65,6 @@ Feel free to contribute; I'm a stickler for making things "Swifty", because I lo
 - [x] Format 0
 - [ ] Format 2
 - [x] Format 4
-- [ ] Format 4 non-zero idRangeOffsets
 - [ ] Formats > 4
 - [x] Unicode 2.0+ encodings
 - [ ]  other character encodings on other platforms as a fall back

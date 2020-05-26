@@ -150,25 +150,37 @@ extension CharacterMapTable {
 		var startCodes:[UInt16]
 		var idDeltas:[UInt16]
 		var idRangeOffsets:[UInt16]
-//		var glyphIndexArray:[UInt16]	//we don't know how long it is
+		var glyphIndexArray:[UInt16]
 		
 		init(data:Data, at offset:Int, encodingRecord:EncodingRecord)throws {
 			self.encodingRecord = encodingRecord
 			length = try data.readMSBFixedWidthUInt(at: offset + 0)
 			language = try data.readMSBFixedWidthUInt(at: offset + 2)
 			let segCountX2:UInt16 = try data.readMSBFixedWidthUInt(at: offset + 4)
-			segmentCount = Int(segCountX2)/2
+			let segmentCount = Int(segCountX2)/2
+			self.segmentCount = segmentCount
 			let endCodesStart:Int = offset+12
-			endCodes = try data.readMSBFixedWidthArray(at: endCodesStart, count: segmentCount)
+			let endCodes:[UInt16] = try data.readMSBFixedWidthArray(at: endCodesStart, count: segmentCount)
+			self.endCodes = endCodes
 			let startCodeStart:Int = endCodesStart + 2*segmentCount + 2
-			startCodes = try data.readMSBFixedWidthArray(at: startCodeStart, count: segmentCount)
+			let startCodes:[UInt16] = try data.readMSBFixedWidthArray(at: startCodeStart, count: segmentCount)
+			self.startCodes = startCodes
 			let idDeltaStart:Int = startCodeStart + 2*segmentCount
 			idDeltas = try data.readMSBFixedWidthArray(at: idDeltaStart, count: segmentCount)
 			let idRangeOffsetStart:Int = idDeltaStart + 2*segmentCount
 			idRangeOffsets = try data.readMSBFixedWidthArray(at: idRangeOffsetStart, count: segmentCount)
-			//TODO: figure out how long this array is
-//			glyphIndexArray = try data.readMSBFixedWidthArray(at: idRangeOffsetStart, count: segmentCount)
-//			fatalError("write me")
+			let glyphIndexArrayStart:Int = idRangeOffsetStart + 2*segmentCount
+			let nonZeroIdRangeOffsets:[(Int, UInt16)] = idRangeOffsets.enumerated().filter { $1 != 0}
+			
+			//what's the furthest address into the glyph index array?  we need
+			let allOffsets:[UInt16] = nonZeroIdRangeOffsets.map {
+				//TODO: fix me, make this math modulo 65536
+				let maxCodeDiff:UInt16 = endCodes[$0.0] - startCodes[$0.0]
+				let less = UInt16(segmentCount - $0.0)
+				return maxCodeDiff &+ $0.1/2 &- less &+ 2
+			}
+			let glyphIndexLength:Int =  Int( allOffsets.reduce(0, max) )
+			glyphIndexArray = try data.readMSBFixedWidthArray(at: glyphIndexArrayStart, count: glyphIndexLength)
 		}
 		
 		
@@ -178,7 +190,7 @@ extension CharacterMapTable {
 			}
 			let startIndex:Int = Int(startCodes[segmentIndex])
 			guard startIndex <= characterIndex else { return .missingCharacterGlyphIndex }
-			let idRangeOffset:Int = Int(idRangeOffsets[segmentIndex])
+			let idRangeOffset:UInt16 = idRangeOffsets[segmentIndex]
 			if idRangeOffset == 0 {
 				//All idDelta[i] arithmetic is modulo 65536.
 				if characterIndex > Int(UInt16.max) { return .missingCharacterGlyphIndex }
@@ -187,9 +199,15 @@ extension CharacterMapTable {
 				return Int(finalIndex)
 			} else {
 				let offset:Int = characterIndex - startIndex
-				idRangeOffset + offset
-				//TODO: write me
-				fatalError("write me")
+				let less:UInt16 = UInt16(idRangeOffsets.count) - UInt16(segmentIndex)
+				let indexInto:UInt16 = UInt16(offset) &+ idRangeOffset/UInt16(2) &- less
+				let glyphIndex:Int = Int(glyphIndexArray[Int(indexInto)])
+				if glyphIndex == 0 {
+					return .missingCharacterGlyphIndex
+				}
+				let shortGlyphIndex = UInt16(characterIndex)
+				let finalIndex:UInt16 = shortGlyphIndex &+ idDeltas[segmentIndex]
+				return Int(finalIndex)
 			}
 		}
 		
