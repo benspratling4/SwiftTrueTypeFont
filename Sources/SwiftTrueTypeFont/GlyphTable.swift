@@ -29,10 +29,13 @@ struct GlyphTable {
 		return GlyphBox(xMin: xMin, yMin: yMin, xMax: xMax, yMax: yMax)
 	}
 	
-	
-	func glyph(in range:Range<Int>)throws->Glyph {
+	///nil means whitespace
+	func glyph(in range:Range<Int>)throws->Glyph? {
 		let start:Int = range.lowerBound
 		let end:Int = range.upperBound
+		if end == start {
+			return nil
+		}
 		let numberOfCounters:Int16 = try subData.readMSBFixedWidthInt(at: start)
 		let isCompound:Bool = numberOfCounters < 0
 		let contourCount:Int = Int(numberOfCounters) * (isCompound ? -1 : 1)
