@@ -63,6 +63,8 @@ extension CharacterMapTable {
 		case 4:
 			return try CharacterEncodingTableFormat4(data: data, at: offset + 2, encodingRecord: encodingRecord)
 			
+		//TODO: format 12 is most useful of the 32-bit maps
+			
 		default:
 			throw CharacterMapTableError.unsupportedFormat(format)
 		}
