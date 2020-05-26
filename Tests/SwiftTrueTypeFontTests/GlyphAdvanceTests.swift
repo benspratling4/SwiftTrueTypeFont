@@ -77,7 +77,7 @@ final class GlyphAdvanceTests: XCTestCase {
 		let font = TestSamples.ubuntuRegular()
 		let values:[FontOptionValue] = font.options.compactMap({ option in
 			guard option.name == String.FontOptionNameSize else { return nil }
-			return option.value(34.0)
+			return option.value(24.0)
 		})
 		guard let renderingFont:RenderingFont = font.rendering(options:values) else {
 			XCTFail("unable to obtain rendering font")
@@ -93,7 +93,7 @@ final class GlyphAdvanceTests: XCTestCase {
 		context.drawPath(Path(inRect:Rect(origin: .zero, size: frame)), fill:FillOptions(color:colorSpace.white), stroke: nil)
 		
 		context.currentState.applyTransformation(Transform2D(translateX: 20, y: 60))
-		context.drawText("This is a simple sentence.", font: renderingFont, fillShader:SolidColorShader(color: colorSpace.black), stroke: nil)
+		context.drawText("The quick brown fox jumped over the lazy dog.", font: renderingFont, fillShader:SolidColorShader(color: colorSpace.black), stroke: nil)
 		
 		guard let pngData = context.image.pngData else {
 			XCTFail("couldn't get png data")

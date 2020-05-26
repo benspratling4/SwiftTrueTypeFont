@@ -47,3 +47,34 @@ Here's an example of getting a rendering font with size 17.0 from the font.
 Conveniences for reading MSBs from `Data` are in `Data+MSB.swift` 
 
 Feel free to contribute; I'm a stickler for making things "Swifty", because I love Swift as a language.  Any functions you write should feature two paths: a detailed path suitable for introspection and throw errors meaningful to a developer who wants to examine the validity of the font, and a simple path that gets a font user quick access to things they want.
+
+
+## Progress
+
+
+### Name
+
+- [x] Post script name in English
+- [ ] other names in other languages
+
+
+### Glyph/path conversion
+- [x] Simple Glyphs
+- [ ] Compound glyphs
+
+
+### CharacterMaps
+
+- [x] Format 0
+- [ ] Format 2
+- [x] Format 4
+- [ ] Formats > 4
+- [x] Unicode 2.0+ encodings
+- [ ]  other character encodings on other platforms as a fall back
+
+
+### Instructing
+
+- [x] procedural, logical, and arithmetic operators except if/else
+- [ ] geometry commands
+- [ ] CVT / storage commands
