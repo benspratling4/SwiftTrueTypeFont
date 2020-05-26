@@ -63,8 +63,8 @@ extension CharacterMapTable {
 		case 4:
 			return try CharacterEncodingTableFormat4(data: data, at: offset + 2, encodingRecord: encodingRecord)
 			
-		//TODO: format 12 is most useful of the 32-bit maps
-			
+		case 12:
+			return try CharacterEncodingTableFormat12(data: data, at: offset, encodingRecord: encodingRecord)
 		default:
 			throw CharacterMapTableError.unsupportedFormat(format)
 		}
@@ -172,17 +172,8 @@ extension CharacterMapTable {
 			let idRangeOffsetStart:Int = idDeltaStart + 2*segmentCount
 			idRangeOffsets = try data.readMSBFixedWidthArray(at: idRangeOffsetStart, count: segmentCount)
 			let glyphIndexArrayStart:Int = idRangeOffsetStart + 2*segmentCount
-			let nonZeroIdRangeOffsets:[(Int, UInt16)] = idRangeOffsets.enumerated().filter { $1 != 0}
-			
-			//what's the furthest address into the glyph index array?  we need
-			let allOffsets:[UInt16] = nonZeroIdRangeOffsets.map {
-				//TODO: fix me, make this math modulo 65536
-				let maxCodeDiff:UInt16 = endCodes[$0.0] - startCodes[$0.0]
-				let less = UInt16(segmentCount - $0.0)
-				return maxCodeDiff &+ $0.1/2 &- less &+ 2
-			}
-			let glyphIndexLength:Int =  Int( allOffsets.reduce(0, max) )
-			glyphIndexArray = try data.readMSBFixedWidthArray(at: glyphIndexArrayStart, count: glyphIndexLength)
+			let glyphIndexLength:Int = Int(length) - glyphIndexArrayStart
+			glyphIndexArray = try data.readMSBFixedWidthArray(at: glyphIndexArrayStart, count: glyphIndexLength/2)
 		}
 		
 		
@@ -216,6 +207,48 @@ extension CharacterMapTable {
 	}
 	
 	
+	
+	
+	
+	
+	
+	struct CharacterEncodingTableFormat12 : CharacterEncodingTable {
+	//	var format:UInt16	//12
+		var encodingRecord:EncodingRecord
+		var length:UInt32
+		var language:UInt32
+		var segments:[Segment]
+		
+		struct Segment {
+			var startCharCode:UInt32
+			var endCharCode:UInt32
+			var startGlyphCode:UInt32
+		}
+		
+		init(data:Data, at offset:Int, encodingRecord:EncodingRecord)throws {
+			self.encodingRecord = encodingRecord
+			length = try data.readMSBFixedWidthUInt(at: offset + 2)
+			language = try data.readMSBFixedWidthUInt(at: offset + 6)
+			let segmentCount:UInt32 = try data.readMSBFixedWidthUInt(at: offset + 10)
+			let allInts:[UInt32] = try data.readMSBFixedWidthArray(at: offset + 14, count: 3*Int(segmentCount))
+			segments = [Int](0..<Int(segmentCount)).map {
+				Segment(startCharCode: allInts[3*$0], endCharCode:  allInts[3*$0+1], startGlyphCode:  allInts[3*$0+2])
+			}
+		}
+		
+		func glyphIndex(characterIndex: Int) -> Int {
+			guard let segmentIndex:Int = segments.firstIndex(where: { Int($0.endCharCode) >= characterIndex }) else {
+				return .missingCharacterGlyphIndex
+			}
+			let segment:Segment = segments[segmentIndex]
+			let startIndex:Int = Int(segment.startCharCode)
+			guard startIndex <= characterIndex else { return .missingCharacterGlyphIndex }
+			return characterIndex - startIndex + Int(segment.startGlyphCode)
+			
+		}
+		
+	}
+
 }
 
 
