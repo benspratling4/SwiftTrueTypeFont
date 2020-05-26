@@ -8,14 +8,12 @@ The TrueType / OpenType font specs are massive, https://docs.microsoft.com/en-us
 
 ### Read a file
 
-`import SwiftGraphicsCore`
-
-`import SwiftTrueTypeFont`
-
-`let data:Data = ... //read data from a *.ttf or *.otf file.`
-
-`let trueTypeFont:TrueTypeFont? = try? TrueTypeFont(data:data)`
-
+```swift
+import SwiftGraphicsCore
+import SwiftTrueTypeFont
+let data:Data = ... //read data from a *.ttf or *.otf file.
+let trueTypeFont:TrueTypeFont? = try? TrueTypeFont(data:data)
+```
 
 ### Rendering a font
 
