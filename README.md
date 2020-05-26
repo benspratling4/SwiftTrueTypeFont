@@ -65,7 +65,8 @@ Feel free to contribute; I'm a stickler for making things "Swifty", because I lo
 - [x] Format 0
 - [ ] Format 2
 - [x] Format 4
-- [ ] Formats > 4
+- [x] Format 12
+- [ ] Other formats
 - [x] Unicode 2.0+ encodings
 - [ ]  other character encodings on other platforms as a fall back
 

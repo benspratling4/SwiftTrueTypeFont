@@ -172,7 +172,7 @@ extension CharacterMapTable {
 			let idRangeOffsetStart:Int = idDeltaStart + 2*segmentCount
 			idRangeOffsets = try data.readMSBFixedWidthArray(at: idRangeOffsetStart, count: segmentCount)
 			let glyphIndexArrayStart:Int = idRangeOffsetStart + 2*segmentCount
-			let glyphIndexLength:Int = Int(length) - glyphIndexArrayStart
+			let glyphIndexLength:Int = Int(length) - (glyphIndexArrayStart-offset)
 			glyphIndexArray = try data.readMSBFixedWidthArray(at: glyphIndexArrayStart, count: glyphIndexLength/2)
 		}
 		
