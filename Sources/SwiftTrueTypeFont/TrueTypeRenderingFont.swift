@@ -65,27 +65,29 @@ public class TrueTypeRenderingFont : RenderingFont {
 			
 			//make paths out of the Glyph, then scale it
 			var path = Path()
-			var controlPoint:Point? = nil
+			
 			for contour in simpleGlyph.contours {
-				var isFirstPoint:Bool = true
-				for point in contour.points {
+				var controlPoint:Point? = nil
+				//paths are implicitly closed, so we just add the first point onto the end
+				var allPoints = contour.points
+				allPoints.append(allPoints[0])
+				for (pointIndex, point) in contour.points.enumerated() {
 					let thisPoint:Point = Point(x: SGFloat(point.x), y: SGFloat(point.y))
-					if isFirstPoint {
+					if pointIndex == 0 {
 						if !point.isOnCurve {
 							print("wait what?")
 						}
 						path.move(to: thisPoint)
-						isFirstPoint = false
-						continue
 					}
-					if point.isOnCurve {
+					else if point.isOnCurve {
 						if let ctrlPoint = controlPoint {
 							path.addCurve(near: ctrlPoint, to: thisPoint)
 						} else {
 							path.addLine(to: thisPoint)
 						}
 						controlPoint = nil
-					} else {
+					}
+					else {	//not on curve
 						if let ctrlPoint = controlPoint {
 							//there was an implicit on-curve point half way in between them
 							let implicitOnCurvePoint = (thisPoint + ctrlPoint)/2.0
@@ -94,6 +96,7 @@ public class TrueTypeRenderingFont : RenderingFont {
 						controlPoint = thisPoint
 					}
 				}
+				path.close()
 			}
 			//let moveTransform = Transform2D(translateX: -SGFloat(xOffset), y: 0.0)
 			let scaleTransform = Transform2D(scaleX: scale, scaleY:-scale)
