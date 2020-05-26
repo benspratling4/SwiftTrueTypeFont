@@ -1,12 +1,12 @@
 # SwiftTrueTypeFont
-Pure Swift reading of the binary bits of True Type Font (.ttf) Files
+Pure-Swift reading of the True Type Font (.ttf) file format, and conformance to `SwiftGraphicsCore`'s `Font`.
 
 This is a work in progress.
-The TrueType / OpenType font specs are massive, https://docs.microsoft.com/en-us/typography/opentype/spec/otff.    
+The TrueType / OpenType font specs are massive, [https://docs.microsoft.com/en-us/typography/opentype/spec/otff](https://docs.microsoft.com/en-us/typography/opentype/spec/otff),[https://developer.apple.com/fonts/TrueType-Reference-Manual/RM05/Chap5.html#FDEF](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM05/Chap5.html#FDEF).    
 
 ## For users:
 
-### Read a file
+### Read a `.ttf` file
 
 ```swift
 import SwiftGraphicsCore
@@ -21,18 +21,16 @@ let trueTypeFont:TrueTypeFont? = try? TrueTypeFont(data:data)
 
 Here's an example of getting a rendering font with size 17.0 from the font.
 
-`let font:Font = trueTypeFont`
+```swift
+let font:Font = trueTypeFont
+let values:[FontOptionValue] = font.options.compactMap({ option in
+        guard option.name == String.FontOptionNameSize else { return nil }
+        return option.value(14.0)
+	})
+guard let renderingFont:RenderingFont = font.rendering(options:values) else { /* fail */ } 
+```
 
-`let values:[FontOptionValue] = font.options.compactMap({ option in`
-
-`        guard option.name == String.FontOptionNameSize else { return nil }`
-
-`        return option.value(14.0)`
-
-`	})`
-
-`guard let renderingFont:RenderingFont = font.rendering(options:values) else { /* fail */ }` 
-
+The rendering font can then be used with the `drawText(`  method on any `GraphicsContext`.
 
 ### Getting the PostScript name of the font, suitable for use in `UIFont(name:...` in iOS.
 
@@ -59,6 +57,7 @@ Feel free to contribute; I'm a stickler for making things "Swifty", because I lo
 ### Glyph/path conversion
 - [x] Simple Glyphs
 - [ ] Compound glyphs
+- [ ] Modify fill algorithms in SwiftGraphicsCore to support winding number logic & wrench down tight the intersection algorithms.
 
 
 ### CharacterMaps
@@ -66,6 +65,7 @@ Feel free to contribute; I'm a stickler for making things "Swifty", because I lo
 - [x] Format 0
 - [ ] Format 2
 - [x] Format 4
+- [ ] Format 4 non-zero idRangeOffsets
 - [ ] Formats > 4
 - [x] Unicode 2.0+ encodings
 - [ ]  other character encodings on other platforms as a fall back
