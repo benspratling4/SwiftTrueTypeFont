@@ -19,7 +19,7 @@ let trueTypeFont:TrueTypeFont? = try? TrueTypeFont(data:data)
 
 `TrueTypeFont` comforms to `SwiftGraphicsCore`'s `Font`, which means that in order to render it, you have to provide values for the options.  In particular, you need to provide an option value for the size in order to obtain a `RenderingFont`.  Only a `RenderingFont` can make glyphs directly.
 
-Here's an example of getting a rendering font with size 17.0 from the font.
+Here's an example of getting a rendering font with size 14.0 from the font.
 
 ```swift
 let font:Font = trueTypeFont
@@ -58,20 +58,30 @@ Feel free to contribute; I'm a stickler for making things "Swifty", because I lo
 - [x] Simple Glyphs
 - [x] Compound glyphs (tested super-simple transformations, haven't tested point-matching offsets)
 - [ ] Modify fill algorithms in SwiftGraphicsCore to support winding number logic & wrench down tight the intersection algorithms.
+- [ ] Non-outline glyphs
 
-
-### CharacterMaps
+### Character Maps
 
 - [x] Format 0
 - [ ] Format 2
 - [x] Format 4
+- [x] Format 6
+- [ ] Format 8
+- [ ] Format 10
 - [x] Format 12
-- [ ] Other formats
+- [ ] Format 13
+- [ ] Format 14	//probably will not do.  unicode variation sequences aren't in the current vision
+
+
+### Recognized Encodings
 - [x] Unicode 2.0+ encodings
-- [ ]  other character encodings on other platforms as a fall back
+- [x] Windows UCS-2 encoding
+- [ ]  other character encodings on other platforms as a fall back?
 
 
 ### Instructing
+
+(Instucting cannot be activated until all instructions are correctly interpretted)
 
 - [x] procedural, logical, and arithmetic operators except if/else
 - [ ] geometry commands
