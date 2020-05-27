@@ -105,7 +105,7 @@ final class GlyphAdvanceTests: XCTestCase {
 	
 	
 	func testWordsRendering() {
-		let font = TestSamples.ubuntuRegular()
+		let font = TestSamples.openSans()
 		let values:[FontOptionValue] = font.options.compactMap({ option in
 			guard option.name == String.FontOptionNameSize else { return nil }
 			return option.value(24.0)
@@ -147,6 +147,22 @@ final class GlyphAdvanceTests: XCTestCase {
 		}
 		print(font.indicesOfCompoundGlyphs())
 		//
+		
+	}
+	
+	
+	
+	
+	func testAdditionalCharacterMapFormats() {
+		let font = TestSamples.openSans()
+		let values:[FontOptionValue] = font.options.compactMap({ option in
+			guard option.name == String.FontOptionNameSize else { return nil }
+			return option.value(14.0)
+		})
+		guard let renderingFont:RenderingFont = font.rendering(options:values) else {
+			XCTFail("unable to obtain rendering font")
+			return
+		}
 		
 	}
 	

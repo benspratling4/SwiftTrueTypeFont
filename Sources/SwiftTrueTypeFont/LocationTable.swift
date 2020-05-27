@@ -36,10 +36,28 @@ struct LocationTable {
  				glyphOffsets[i] = 2 * Int(value)
 			}
 			
-		case 1, 2:	//long offsets
+		case 1:	//long offsets
 			for i in 0..<numGlyphs+1 {
 				let value:UInt32 = try data.readMSBFixedWidthUInt(at: offset + 4*i)
  				glyphOffsets[i] = Int(value)
+			}
+			
+		case 2:
+			let bytesPerChar:Int = (range.upperBound - range.lowerBound)/(numGlyphs + 1)
+			if bytesPerChar == 2 {
+				//short offsets
+				for i in 0..<numGlyphs+1 {
+					let value:UInt16 = try data.readMSBFixedWidthUInt(at: offset + 2*i)
+					glyphOffsets[i] = 2 * Int(value)
+				}
+			} else if bytesPerChar == 4 {
+				//long offsets
+				for i in 0..<numGlyphs+1 {
+					let value:UInt32 = try data.readMSBFixedWidthUInt(at: offset + 4*i)
+					glyphOffsets[i] = Int(value)
+				}
+			} else {
+				throw LocationTableError.invalidFormat
 			}
 			
 		default:

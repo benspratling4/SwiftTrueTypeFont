@@ -28,7 +28,12 @@ public class TrueTypeRenderingFont : RenderingFont {
 	
 	public func gylphIndexes(text:String)->[Int] {
 		///currently only support unicode encoding 3 tables
-		guard let table:CharacterEncodingTable = trueTypeFont.characterMapTable.tables.filter({ $0.encodingRecord.platformId == .unicode && $0.encodingRecord.encodingID == 3 }).first else {
+		guard let table:CharacterEncodingTable =
+			//preferred table is unicode encoding id 3 (consider others?)
+			trueTypeFont.characterMapTable.tables.filter({ $0.encodingRecord.platformId == .unicode && $0.encodingRecord.encodingID == 3 }).first
+			//fallback is windows 1, which suports UCS-2 (16-bit BMP (Basic Multi-lingual Plane) ) only
+			?? trueTypeFont.characterMapTable.tables.filter({ $0.encodingRecord.platformId == .windows && $0.encodingRecord.encodingID == 1 }).first
+			else {
 			//return missing glyph for every thing
 			return text.map { (chracter) -> Int in
 				//for now, they're all the missing glyph
