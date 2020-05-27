@@ -56,7 +56,7 @@ Feel free to contribute; I'm a stickler for making things "Swifty", because I lo
 
 ### Glyph/path conversion
 - [x] Simple Glyphs
-- [ ] Compound glyphs
+- [x] Compound glyphs (tested super-simple transformations, haven't tested point-matching offsets)
 - [ ] Modify fill algorithms in SwiftGraphicsCore to support winding number logic & wrench down tight the intersection algorithms.
 
 

@@ -73,6 +73,37 @@ final class GlyphAdvanceTests: XCTestCase {
 	}
 	
 	
+	func testCompoundGlyphPath() {
+		let font = TestSamples.ubuntuRegular()
+		let values:[FontOptionValue] = font.options.compactMap({ option in
+			guard option.name == String.FontOptionNameSize else { return nil }
+			return option.value(24.0)
+		})
+		guard let renderingFont:RenderingFont = font.rendering(options:values) else {
+			XCTFail("unable to obtain rendering font")
+			return
+		}
+		
+		//create a space to draw in
+		let frame:Size = Size(width: 640, height: 88.0)
+		
+		let colorSpace:ColorSpace = GenericRGBAColorSpace(hasAlpha: true)
+		let context = SampledGraphicsContext(dimensions: frame, colorSpace: colorSpace)
+		context.antialiasing = .subsampling(resolution: .three)
+		context.drawPath(Path(inRect:Rect(origin: .zero, size: frame)), fill:FillOptions(color:colorSpace.white), stroke: nil)
+		
+		context.currentState.applyTransformation(Transform2D(translateX: 20, y: 60))
+		context.drawText("á", font: renderingFont, fillShader:SolidColorShader(color: colorSpace.black), stroke: nil)
+		
+		guard let pngData = context.image.pngData else {
+			XCTFail("couldn't get png data")
+			return
+		}
+		let outputFilePath = URL(fileURLWithPath: #file).deletingLastPathComponent().appendingPathComponent("compoundGlyphTest.png")
+		try? pngData.write(to: outputFilePath)
+	}
+	
+	
 	func testWordsRendering() {
 		let font = TestSamples.ubuntuRegular()
 		let values:[FontOptionValue] = font.options.compactMap({ option in
@@ -101,6 +132,22 @@ final class GlyphAdvanceTests: XCTestCase {
 		}
 		let outputFilePath = URL(fileURLWithPath: #file).deletingLastPathComponent().appendingPathComponent("ubuntu.png")
 		try? pngData.write(to: outputFilePath)
+	}
+	
+	
+	func testFindCompoundGlyphIndexes() {
+		let font = TestSamples.ubuntuRegular()
+		let values:[FontOptionValue] = font.options.compactMap({ option in
+			guard option.name == String.FontOptionNameSize else { return nil }
+			return option.value(14.0)
+		})
+		guard let renderingFont:RenderingFont = font.rendering(options:values) else {
+			XCTFail("unable to obtain rendering font")
+			return
+		}
+		print(font.indicesOfCompoundGlyphs())
+		//
+		
 	}
 	
 	
