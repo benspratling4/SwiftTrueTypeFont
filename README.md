@@ -47,7 +47,6 @@ Feel free to contribute; I'm a stickler for making things "Swifty", because I lo
 
 ## Progress
 
-
 ### Name
 
 - [x] Post script name in English
@@ -62,15 +61,15 @@ Feel free to contribute; I'm a stickler for making things "Swifty", because I lo
 
 ### Character Maps
 
-- [x] Format 0
-- [ ] Format 2
-- [x] Format 4
-- [x] Format 6
-- [ ] Format 8
-- [ ] Format 10
-- [x] Format 12
-- [ ] Format 13
-- [ ] Format 14	//probably will not do.  unicode variation sequences aren't in the current vision
+Currently cmap formats 0, 4, 6 and 12 are supported.
+
+I don't plan to support format 2 because it only supports mixed 8/16-bit encodings directly, and we're getting the utf-8 byte stream after the multi-byte encodings have been flattened.
+
+I don't plan to support formats 8 or 10 because their use is very rare. 
+
+I do'nt plan to support 13 because I don't plan to support "last resort" fonts, but maybe that will change. 
+
+I don't plan to support 14 because I don't plan to support variation sequences.  
 
 
 ### Recognized Encodings
