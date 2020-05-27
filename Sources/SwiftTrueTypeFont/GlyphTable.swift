@@ -350,7 +350,7 @@ struct GlyphTable {
 				allContours.append(contentsOf:translatedComponentContours)
 			}
 		} while flags.contains(.additionalGlyphsAfterThisOne)
-		
+		//TODO: instructions fill the rest of the range of the glyph
 		return allContours
 	}
 	

@@ -59,13 +59,14 @@ extension CharacterMapTable {
 			return try CharacterEncodingTableFormat0(data: data, at: offset + 2, encodingRecord:encodingRecord)
 //		case 2:
 //			return try CharacterEncodingTableFormat2(data: data, at: offset + 2, encodingRecord:encodingRecord)
-			
 		case 4:
 			return try CharacterEncodingTableFormat4(data: data, at: offset + 2, encodingRecord: encodingRecord)
-			
+		case 6:
+			return try CharacterEncodingTableFormat6(data: data, at: offset + 2, encodingRecord: encodingRecord)
 		case 12:
 			return try CharacterEncodingTableFormat12(data: data, at: offset, encodingRecord: encodingRecord)
 		default:
+			print("unsupported cmap format \(format)")
 			throw CharacterMapTableError.unsupportedFormat(format)
 		}
 	}
@@ -207,7 +208,34 @@ extension CharacterMapTable {
 	}
 	
 	
-	
+	struct CharacterEncodingTableFormat6 : CharacterEncodingTable {
+		//	var format:UInt16	//6
+		var encodingRecord:EncodingRecord
+		var length:UInt16
+		var language:UInt16
+		var firstCode:Int
+		var entryCount:Int
+		var glyphIndexArray:[UInt16]
+		
+		
+		init(data:Data, at offset:Int, encodingRecord:EncodingRecord)throws {
+			self.encodingRecord = encodingRecord
+			length = try data.readMSBFixedWidthUInt(at: offset + 0)
+			language = try data.readMSBFixedWidthUInt(at: offset + 2)
+			let firstCode:UInt16 = try data.readMSBFixedWidthUInt(at: offset + 4)
+			self.firstCode = Int(firstCode)
+			let entryCount:UInt16 = try data.readMSBFixedWidthUInt(at: offset + 6)
+			self.entryCount = Int(entryCount)
+			glyphIndexArray = try data.readMSBFixedWidthArray(at: offset + 8, count: self.entryCount)
+		}
+		
+		func glyphIndex(characterIndex: Int) -> Int {
+			guard characterIndex >= firstCode else { return .missingCharacterGlyphIndex }
+			let offset:Int = characterIndex - firstCode
+			guard offset < entryCount else { return .missingCharacterGlyphIndex }
+			return Int(glyphIndexArray[offset])
+		}
+	}
 	
 	
 	
