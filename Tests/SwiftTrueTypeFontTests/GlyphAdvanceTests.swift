@@ -105,7 +105,7 @@ final class GlyphAdvanceTests: XCTestCase {
 	
 	
 	func testWordsRendering() {
-		let font = TestSamples.openSans()
+		let font = TestSamples.canterbury()
 		let values:[FontOptionValue] = font.options.compactMap({ option in
 			guard option.name == String.FontOptionNameSize else { return nil }
 			return option.value(24.0)
