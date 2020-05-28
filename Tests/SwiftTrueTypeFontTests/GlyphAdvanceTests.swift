@@ -60,7 +60,7 @@ final class GlyphAdvanceTests: XCTestCase {
 		let context = SampledGraphicsContext(dimensions: finalBox.size, colorSpace: colorSpace)
 		context.antialiasing = .subsampling(resolution: .three)
 		context.drawPath(Transform2D(translateX: 0.9, y: 0.0).transform(Path(inRect:finalBox)), fill: FillOptions(color: colorSpace.white), stroke: nil)
-		context.drawPath(boxedPath, fill:FillOptions(color:colorSpace.black), stroke: nil)
+		context.drawPath(boxedPath, fill:FillOptions(color:colorSpace.black, subPathOverlapping: .windingNumber), stroke: nil)
 		
 		
 		guard let pngData = context.image.pngData else {
@@ -108,7 +108,7 @@ final class GlyphAdvanceTests: XCTestCase {
 		let font = TestSamples.canterbury()
 		let values:[FontOptionValue] = font.options.compactMap({ option in
 			guard option.name == String.FontOptionNameSize else { return nil }
-			return option.value(24.0)
+			return option.value(30.0)
 		})
 		guard let renderingFont:RenderingFont = font.rendering(options:values) else {
 			XCTFail("unable to obtain rendering font")

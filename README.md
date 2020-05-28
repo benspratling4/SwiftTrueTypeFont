@@ -56,7 +56,7 @@ Feel free to contribute; I'm a stickler for making things "Swifty", because I lo
 ### Glyph/path conversion
 - [x] Simple Glyphs
 - [x] Compound glyphs (tested super-simple transformations, haven't tested point-matching offsets)
-- [ ] Modify fill algorithms in SwiftGraphicsCore to support winding number logic & wrench down tight the intersection algorithms.
+- [x] Modify fill algorithms in SwiftGraphicsCore to support winding number logic & wrench down tight the intersection algorithms.
 - [ ] Non-outline glyphs
 
 ### Character Maps
@@ -67,7 +67,7 @@ I don't plan to support format 2 because it only supports mixed 8/16-bit encodin
 
 I don't plan to support formats 8 or 10 because their use is very rare. 
 
-I do'nt plan to support 13 because I don't plan to support "last resort" fonts, but maybe that will change. 
+I don't plan to support 13 because I don't plan to support "last resort" fonts, but maybe that will change. 
 
 I don't plan to support 14 because I don't plan to support variation sequences.  
 
@@ -77,6 +77,11 @@ I don't plan to support 14 because I don't plan to support variation sequences.
 - [x] Windows UCS-2 encoding
 - [ ]  other character encodings on other platforms as a fall back?
 
+
+### Variations
+
+- [ ] fvar table
+- [ ] gvar table
 
 ### Instructing
 
